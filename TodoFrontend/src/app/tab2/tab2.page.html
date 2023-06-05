@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Edit Todo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [inset]="true">
+    <ion-item *ngFor="let item of todos; index as i">
+      <ng-container *ngIf="!editMode[i]; else editModeTemplate">
+        <ion-label>{{item.task}}</ion-label>
+        <ion-button (click)="changeEditMode(i)" fill="clear">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+      </ng-container>
+      <ng-template #editModeTemplate>
+        <ion-input [(ngModel)]="todos[i].task"></ion-input>
+        <ion-button (click)="confirmTodoName(i)" fill="clear">
+          <ion-icon name="checkmark"></ion-icon>
+        </ion-button>
+      </ng-template>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

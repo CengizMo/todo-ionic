@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Todo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-fab horizontal="center" vertical="center">
+    <ion-fab-button id="created-alert" (click)="createTodo()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-alert
+  trigger="created-alert"
+  header="Alert"
+  message="Todo is created"
+  [buttons]="alertButtons"
+  ></ion-alert>
+</ion-content>
+
