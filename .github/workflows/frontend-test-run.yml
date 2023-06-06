@@ -8,9 +8,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
-      - name: Change directory
-        run: cd ./TodoFrontend
-        
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -21,9 +18,12 @@ jobs:
         
       - name: Install dependencies
         run: npm install
+        working-directory: TodoFrontend
         
       - name: Build Ionic app
         run: ionic build
+        working-directory: TodoFrontend
         
       - name: Run tests
         run: ionic test
+        working-directory: TodoFrontend
