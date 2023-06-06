@@ -1,0 +1,26 @@
+name: Frontend Test Run
+run-name: Deployed by ${{ github.actor }}
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli
+        
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Build Ionic app
+        run: ionic build
+        
+      - name: Run tests
+        run: ionic test
