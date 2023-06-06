@@ -22,5 +22,5 @@ jobs:
         working-directory: TodoFrontend
         
       - name: Run tests
-        run: ionic test
+        run: npm run run-ionic
         working-directory: TodoFrontend
