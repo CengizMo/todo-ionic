@@ -11,7 +11,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 'latest'
+          node-version: 'lts'
           
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli
