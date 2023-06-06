@@ -12,16 +12,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          
-      - name: Install Ionic CLI
-        run: npm install -g @ionic/cli
         
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: TodoFrontend
         
       - name: Build Ionic app
-        run: ionic build
+        run: build-ionic
         working-directory: TodoFrontend
         
       - name: Run tests
