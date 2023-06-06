@@ -10,13 +10,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "build-ionic": "ionic-app-scripts build",
-    "ionic": "ionic"
   },
   "private": true,
   "dependencies": {
-    "@ionic/app-scripts": "^5.0.4",
-    "ionic": "^6.17.0",
     "@angular/animations": "^16.0.0",
     "@angular/common": "^16.0.0",
     "@angular/compiler": "^16.0.0",
