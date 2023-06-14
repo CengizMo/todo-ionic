@@ -3,7 +3,7 @@
 
 *~
 *.sw[mnpcod]
-.env
+*.env
 .tmp
 *.tmp
 *.tmp.*
