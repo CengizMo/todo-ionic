@@ -1,33 +1,27 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, Res} from '@nestjs/common';
 import { Response } from 'express';
-import { AppService } from 'src/app.service';
-import { Role } from 'src/enums/role.enum';
-import { Roles } from 'src/roles/roles.decorator';
 import { Todo } from 'src/todo.dto';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { UsersService } from 'src/users/users.service';
+
 
 @Controller('todos')
 export class TodoController {
 
-    constructor(private appService: AppService) { }
+    constructor(private usersService: UsersService) { }
 
-    @UseGuards(AuthGuard)
     @Get()
-    getTodos() {
-        return this.appService.getTodos();
-    }
+    async getTodos(@Request() req) {
+        return await this.usersService.getTodos(req.user.username);
+    } 
 
-    @UseGuards(AuthGuard)
     @Get('todo/:id')
-    getTodo(@Param() params: any) {
-        const tempTodos = this.appService.getTodos();
+    async getTodo(@Param() params: any, @Request() req) {
+        const tempTodos = await this.usersService.getTodos(req.user.username);
         return tempTodos[params.id];
     }
 
-    @UseGuards(AuthGuard)
     @Post()
-    async addTodo(@Body() todo: Todo) {
+    async addTodo(@Body() todo: Todo, @Request() req) {
 
         if(todo.task.length === 0 || todo.task === undefined)
         {
@@ -36,24 +30,22 @@ export class TodoController {
         if (todo.checked !== false) {
             todo.checked = false;
         }
-        this.appService.addTodo(todo);
-        const tempTodos = this.appService.getTodos();
+        this.usersService.addTodo(todo, req.user.username);
+        const tempTodos = await this.usersService.getTodos(req.user.username);
         return `New task created: "${tempTodos[0].task}"`;
     }
 
-    @UseGuards(AuthGuard)
     @Put('todo/:id')
-    async editTodo(@Body() todo: Todo, @Param() params: any) {
-        const task = this.appService.editTodo(params.id, todo.task);
+    async editTodo(@Body() todo: Todo, @Param() params: any, @Request() req) {
+        const task = this.usersService.editTodo(params.id, todo.task, req.user.username);
         return `The old task was updated to "${task}"`;
     }
 
-    @UseGuards(AuthGuard)
     @Put('todo/check/:id')
-    async checkTodo(@Body() todo: Todo, @Param() params: any, res: Response) {
-        const response = this.appService.checkTodo(params.id, todo.checked);
+    async checkTodo(@Res() res: Response, @Body() todo: Todo, @Param() params: any, @Request() req) {
+        const response = this.usersService.checkTodo(params.id, todo.checked, req.user.username);
         if (response === false) {
-            const tempTask = this.appService.getTodos();
+            const tempTask = await this.usersService.getTodos(req.user.username);
             res.status(409).send(
                 todo.checked === false ?
                     `you tried to uncheck the task "${tempTask[params.id].task}" which is already unchecked` :
@@ -64,10 +56,9 @@ export class TodoController {
 
     }
 
-    @UseGuards(AuthGuard)
     @Delete('todo/:id')
-    async deleteTodo(@Param() params: any) {
-        const response = this.appService.deleteTodo(params.id);
+    async deleteTodo(@Param() params: any, @Request() req) {
+        const response = this.usersService.deleteTodo(params.id, req.user.username);
         return response;
     }
 }

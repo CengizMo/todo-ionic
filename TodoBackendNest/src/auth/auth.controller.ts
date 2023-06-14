@@ -9,10 +9,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private usersService: UsersService,) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -22,7 +23,8 @@ export class AuthController {
   }
 
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req) {
+    const user = await this.usersService.findOne(req.user.username);
+    return user.todos;
   }
 }
