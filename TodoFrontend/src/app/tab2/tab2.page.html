@@ -6,9 +6,9 @@
 
 <ion-content>
   <ion-list [inset]="true">
-    <ion-item *ngFor="let item of todos; index as i">
+    <ion-item *ngFor="let item of (todos$ | async); index as i">
       <ng-container *ngIf="!editMode[i]; else editModeTemplate">
-        <ion-label>{{item.task}}</ion-label>
+        <ion-label>{{ item.task }}</ion-label>
         <ion-button (click)="changeEditMode(i)" fill="clear">
           <ion-icon name="create"></ion-icon>
         </ion-button>
@@ -22,4 +22,3 @@
     </ion-item>
   </ion-list>
 </ion-content>
-

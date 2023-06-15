@@ -21,7 +21,7 @@ export class TodoController {
     }
 
     @Post()
-    async addTodo(@Body() todo: Todo, @Request() req) {
+    async addTodo(@Res() res: Response, @Body() todo: Todo, @Request() req) {
 
         if(todo.task.length === 0 || todo.task === undefined)
         {
@@ -32,13 +32,13 @@ export class TodoController {
         }
         this.usersService.addTodo(todo, req.user.username);
         const tempTodos = await this.usersService.getTodos(req.user.username);
-        return `New task created: "${tempTodos[0].task}"`;
+        res.json({message: `New task created: "${tempTodos[0].task}"`});
     }
 
     @Put('todo/:id')
-    async editTodo(@Body() todo: Todo, @Param() params: any, @Request() req) {
+    async editTodo(@Res() res: Response, @Body() todo: Todo, @Param() params: any, @Request() req) {
         const task = this.usersService.editTodo(params.id, todo.task, req.user.username);
-        return `The old task was updated to "${task}"`;
+        res.status(200).json({message: `The old task was updated to ${task}`});
     }
 
     @Put('todo/check/:id')
@@ -46,19 +46,19 @@ export class TodoController {
         const response = this.usersService.checkTodo(params.id, todo.checked, req.user.username);
         if (response === false) {
             const tempTask = await this.usersService.getTodos(req.user.username);
-            res.status(409).send(
+            res.status(409).json({message:
                 todo.checked === false ?
                     `you tried to uncheck the task "${tempTask[params.id].task}" which is already unchecked` :
                     `you tried to check the task "${tempTask[params.id].task}" which is already checked`
-            ).end();
+        }).end();
         }
         return response;
 
     }
 
     @Delete('todo/:id')
-    async deleteTodo(@Param() params: any, @Request() req) {
+    async deleteTodo(@Res() res: Response, @Param() params: any, @Request() req) {
         const response = this.usersService.deleteTodo(params.id, req.user.username);
-        return response;
+        res.status(200).json({message: response}) ;
     }
 }

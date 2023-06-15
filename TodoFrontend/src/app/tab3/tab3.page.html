@@ -6,12 +6,11 @@
 
 <ion-content>
   <ion-list [inset]="true">
-    <ion-item *ngFor="let item of todos; index as i">
-      <ion-label>{{item.task}}</ion-label>
+    <ion-item *ngFor="let item of (todos$ | async); index as i">
+      <ion-label>{{ item.task }}</ion-label>
       <ion-button (click)="deleteTodoItem(i)" fill="clear">
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
-
