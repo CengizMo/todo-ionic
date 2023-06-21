@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TodoService } from '../todo.service';
 import { Subject, takeUntil } from 'rxjs';
+import { StorageService } from '../storage.service';
 
 @Component({
   selector: 'app-login',
@@ -17,16 +18,26 @@ export class LoginPage {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private todoService: TodoService
+    private todoService: TodoService,
+    private storageService: StorageService
   ) {
-    if(localStorage.getItem('accessToken') && localStorage.getItem('accessToken') !== undefined)
-    {
-      this.router.navigate(['/tabs/create']);
-    }
+    setTimeout(async () => {
+      await this.validateToken();
+    })
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+  }
+
+  async validateToken() {
+    const accessToken = await this.storageService.get('accessToken');
+    console.log(accessToken);
+    if (accessToken !== undefined && accessToken !== null) {
+      this.todoService.getTodos();
+      this.router.navigate(['/home']);
+    }
+
   }
 
   async login() {
@@ -35,14 +46,14 @@ export class LoginPage {
 
     try {
       this.todoService.login(username, password).pipe(takeUntil(this.unsubscribe$)).subscribe((data) => {
-        console.log(data);
-        localStorage.setItem('accessToken', data.access_token);
-        this.router.navigate(['/tabs/create']);
+        this.storageService.set('accessToken', data.access_token);
+
+        this.router.navigate(['/home']);
       },
-      (error) => {
-        this.loginError = 'Invalid username or password';
-        console.error(error);
-      }
+        (error) => {
+          this.loginError = 'Invalid username or password';
+          console.error(error);
+        }
       )
     } catch (error) {
       this.loginError = 'Invalid username or password';

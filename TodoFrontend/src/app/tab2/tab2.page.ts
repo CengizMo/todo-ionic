@@ -16,6 +16,7 @@ export class Tab2Page implements OnDestroy {
   constructor(private todoService: TodoService) {}
 
   ngOnInit() {
+    this.todoService.validateAccessToken();
     this.todoService.getTodos().pipe(takeUntil(this.unsubscribe$)).subscribe((todos) => {
       this.todos = todos;
       this.editMode = Array(todos.length).fill(false);
@@ -24,6 +25,10 @@ export class Tab2Page implements OnDestroy {
 
   get todos$() {
     return this.todoService.getTodos$();
+  }
+
+  async onLogoutClick(){
+    await this.todoService.logout();
   }
 
   changeEditMode(index: number) {

@@ -4,13 +4,9 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: 'home',
     component: TabsPage,
     children: [
-      {
-        path: 'login',
-        loadChildren: () => import('../login/login.module').then(m => m.LoginPageModule)
-      },
       {
         path: 'create',
         loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
@@ -25,14 +21,18 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/login',
+        redirectTo: '/home/create',
         pathMatch: 'full'
       }
     ]
   },
   {
+    path: 'login',
+    loadChildren: () => import('../login/login.module').then(m => m.LoginPageModule)
+  },
+  {
     path: '',
-    redirectTo: '/tabs/login',
+    redirectTo: '/login',
     pathMatch: 'full'
   }
 ];

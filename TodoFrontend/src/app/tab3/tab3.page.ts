@@ -15,9 +15,14 @@ export class Tab3Page implements OnInit, OnDestroy {
   constructor(private todoService: TodoService) {}
 
   ngOnInit() {
+    this.todoService.validateAccessToken();
     this.todoService.getTodos().pipe(takeUntil(this.unsubscribe$)).subscribe((todos) => {
       this.todos = todos;
     });
+  }
+
+  async onLogoutClick(){
+    await this.todoService.logout();
   }
 
   get todos$() {
@@ -26,7 +31,6 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   deleteTodoItem(index: number) {
     this.todoService.deleteTodo(index).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-      console.log('Todo wurde gelöscht');
     });
   }
 

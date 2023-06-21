@@ -3,7 +3,18 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  auth: {
+    android: {
+      redirectUrl: 'http://10.1.17.184:3000'
+    },
+    emulator: {
+      redirectUrl: 'http://10.1.17.27:3000'
+    },
+    web: {
+      redirectUrl: 'http://localhost:3000',
+    },
+  }
 };
 
 /*
