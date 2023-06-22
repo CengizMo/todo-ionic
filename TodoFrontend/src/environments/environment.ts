@@ -2,8 +2,32 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
-  production: false
+export const environment: {
+  production: boolean;
+  auth: {
+    android: {
+      redirectUrl: string;
+    };
+    emulator: {
+      redirectUrl: string;
+    };
+    web: {
+      redirectUrl: string;
+    };
+  };
+} = {
+  production: false,
+  auth: {
+    android: {
+      redirectUrl: 'http://10.1.17.184:3000'
+    },
+    emulator: {
+      redirectUrl: 'http://10.1.17.27:3000'
+    },
+    web: {
+      redirectUrl: 'http://localhost:3000',
+    },
+  }
 };
 
 /*

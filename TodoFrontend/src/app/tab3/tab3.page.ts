@@ -1,33 +1,36 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TodoService } from '../todo.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
+import { Todo } from '../todo';
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page {
-  todos!: any[];
+export class Tab3Page implements OnInit, OnDestroy {
+  todos: Todo[] = [];
   private unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(private todoService: TodoService) {}
 
   ngOnInit() {
-    this.loadTodos();
-  }
-
-  private loadTodos() {
+    this.todoService.validateAccessToken();
     this.todoService.getTodos().pipe(takeUntil(this.unsubscribe$)).subscribe((todos) => {
       this.todos = todos;
     });
   }
 
+  async onLogoutClick(){
+    await this.todoService.logout();
+  }
+
+  get todos$() {
+    return this.todoService.getTodos$();
+  }
+
   deleteTodoItem(index: number) {
-    const id = index.toString();
-    this.todoService.deleteTodo(id).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-      this.todos.splice(index, 1);
+    this.todoService.deleteTodo(index).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
     });
   }
 
@@ -35,5 +38,4 @@ export class Tab3Page {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
-
 }

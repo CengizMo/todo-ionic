@@ -17,20 +17,20 @@ export class TabsPage {
     });
   }
 
-  updateTodoName(id: string) {
+  updateTodoName(id: number) {
     const task = 'New Name';
     this.todoService.updateTodoName(id, task).subscribe(() => {
       console.log('Todo-name is updated');
     });
   }
 
-  updateTodoChecked(id: string, checked: boolean) {
+  updateTodoChecked(id: number, checked: boolean) {
     this.todoService.updateTodoChecked(id, checked).subscribe(() => {
       console.log('Todo-status is updated');
     });
   }
 
-  deleteTodo(id: string) {
+  deleteTodo(id: number) {
     this.todoService.deleteTodo(id).subscribe(() => {
       console.log('Todo was deleted');
     });

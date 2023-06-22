@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { TodoService } from '../todo.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -14,14 +14,19 @@ export class Tab1Page {
 
   constructor(private todoService: TodoService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.todoService.validateAccessToken();
+  }
+
+  async onLogoutClick(){
+    await this.todoService.logout();
+  }
 
   public alertButtons = ['OK'];
 
   createTodo() {
     const task = 'New Task';
     this.todoService.addTodo(task).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-      console.log('Todo is created');
     });
   }
 
