@@ -1,89 +1,85 @@
 import { Injectable } from '@nestjs/common';
-import { Todo } from 'src/todo.dto';
+import { Todo } from 'src/todo/todo.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 // This should be a real class/interface representing a user entity
-export type User = any;
+// export type TempUser = any;
 
 @Injectable()
 export class UsersService {
 
-  private johnTodos: Todo[] = [
-    {task: "Putzen", checked: false}, 
-    {task: "Schwimmen", checked: false}, 
-    {task: "Müll rausbringen", checked: false}
-    ];
-  
-    
-  private mariaTodos: Todo[] = [
-    {task: "Wäsche aufhängen", checked: false}, 
-    {task: "Tanzen", checked: false}, 
-    {task: "Kochen", checked: false}
-    ];
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
 
+  ){}
 
-  private users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-      todos: this.johnTodos
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-      todos: this.mariaTodos
-    },
-  ];
+  async create(userData: Partial<User>): Promise<User> {
+    const user = this.userRepository.create(userData);
+    return this.userRepository.save(user);
+  }
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+    return this.userRepository.findOne({ where: { username } });
   }
 
   async getTodos(username: string): Promise<Todo[]> {
-    const user = await this.findOne(username);
-    return user.todos;
+    const user = await this.userRepository.findOne({
+      where: { username },
+      relations: ['todos'],
+    });
+    return user?.todos || [];
   }
 
-  addTodo(todo: Todo, username: string){
-    const userIndex = this.users.findIndex(user => user.username === username);
-    this.users[userIndex].todos.unshift(todo);
-  }
-
-  editTodo(id: number, task: string, username: string) {
-    const userIndex = this.users.findIndex(user => user.username === username);
-    this.users[userIndex].todos[id].task = task;
-    return this.users[userIndex].todos[id].task;
-  }
-
-  checkTodo(id: number, checked: boolean, username: string){
-    const userIndex = this.users.findIndex(user => user.username === username);
-
-    if(this.users[userIndex].todos[id].checked === checked)
-    {
-      return false;
-    }
-
-    this.users[userIndex].todos[id].checked = checked;
-    const tempTodo = this.users[userIndex];
-    this.users.splice(id, 1);
-
-    if(checked)
-    {
-        this.users.push(tempTodo);
-        return `The task "${this.users[userIndex].todos[this.users.length - 1].task}" was checked`
-    }
-    else
-    {
-        this.users.unshift(tempTodo);
-        return `The task "${this.users[userIndex].todos[0].task}" was unchecked`
+  async addTodo(todo: Todo, username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user) {
+      user.todos.push(todo);
+      await this.userRepository.save(user);
     }
   }
 
-  deleteTodo(id: number, username: string){
-    const userIndex = this.users.findIndex(user => user.username === username);
-    const tempTodo = this.users[userIndex].todos[id].task;
-    this.users[userIndex].todos.splice(id, 1)
-    return `The Task ${tempTodo} is deleted`;
+  async editTodo(id: number, task: string, username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user && user.todos[id]) {
+      user.todos[id].task = task;
+      await this.userRepository.save(user);
+      return user.todos[id].task;
+    }
+    return null;
+  }
+
+  async checkTodo(id: number, checked: boolean, username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user && user.todos[id]) {
+      if (user.todos[id].checked === checked) {
+        return false;
+      }
+      user.todos[id].checked = checked;
+      await this.userRepository.save(user);
+      const tempTodo = user.todos[id];
+      user.todos.splice(id, 1);
+      if (checked) {
+        user.todos.push(tempTodo);
+        return `The task "${user.todos[user.todos.length - 1].task}" was checked`;
+      } else {
+        user.todos.unshift(tempTodo);
+        return `The task "${user.todos[0].task}" was unchecked`;
+      }
+    }
+    return null;
+  }
+
+  async deleteTodo(id: number, username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user && user.todos[id]) {
+      const deletedTask = user.todos[id].task;
+      user.todos.splice(id, 1);
+      await this.userRepository.save(user);
+      return `The task "${deletedTask}" has been deleted.`;
+    }
+    return null;
   }
 }
 
